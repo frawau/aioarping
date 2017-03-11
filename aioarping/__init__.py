@@ -1,2 +1,2 @@
 #
-from .aiolifx import create_raw_socket, ArpRequester, IPAddressingError
+from .aioarping import create_raw_socket, ArpRequester, IPAddressingError
