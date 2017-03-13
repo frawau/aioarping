@@ -4,12 +4,12 @@ from distutils.core import setup
 
 setup(name='aioarping',
     packages=['aioarping'],
-    version='0.1.1',
+    version='0.1.2',
     author='François Wautier',
     author_email='francois@wautier.eu',
     description='API for arping over a LAN with asyncio.',
     url='http://github.com/frawau/aioarping',
-    download_url='http://github.com/frawau/aiolifx/archive/aioarping/0.1.1.tar.gz',  
+    download_url='http://github.com/frawau/aiolifx/archive/aioarping/0.1.2.tar.gz',  
     keywords = ['arp', 'mac address', 'presence', 'automation'], 
     license='MIT',
     install_requires=[
