@@ -107,10 +107,8 @@ class ArpRequester(asyncio.Protocol):
         self.sip = ipaddress.IPv4Address(info[20:24])
             
     def connection_lost(self, exc):
-        self.loop.stop()
-
-
-
+        super().connection_lost(exc)
+        
     def request(self, ip_addr):
         """Send ARP request, ip_addr is either, a single address, or a range of addr list of 2),
         list of addr (3 or more), or a network"""
