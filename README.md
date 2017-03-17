@@ -46,6 +46,15 @@ Using it is quite simple.
                    'ip'   IP address of the answering device. An ipaddress.IPv4Address
                
                 It will be called for every ARP response.
+                
+       You can also set skip_list, a list of ipaddress.IPv4Address, for those IP addresses 
+       that need not be bothered
+       
+            arpctrl.skip_list=[ipaddress.IPv4Address("192.168.0.21")]
+            
+       One's own address is always added to that list. So we won't send gratuitous ARP requests.
+                
+
                    
     4- Send the ARP request
         

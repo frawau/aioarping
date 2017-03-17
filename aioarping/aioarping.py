@@ -95,6 +95,7 @@ class ArpRequester(asyncio.Protocol):
         self.transport = None
         self.smac = None
         self.sip = None
+        self.skip_list=[] #List of IP addresses not to be bothered
         self.process = self.default_process
     
     def connection_made(self, transport):
@@ -111,7 +112,8 @@ class ArpRequester(asyncio.Protocol):
         
     def request(self, ip_addr):
         """Send ARP request, ip_addr is either, a single address, or a range of addr list of 2),
-        list of addr (3 or more), or a network"""
+        list of addr (3 or more), or a network. Do not send to oneself"""
+        self.skip_list.append(self.sip)
         try:
             if isinstance(ip_addr,list):
                 if len(ip_addr)==2:
@@ -128,12 +130,16 @@ class ArpRequester(asyncio.Protocol):
             #Now we have a list
             for addr in ip_addr:
                 if isinstance(addr,ipaddress.IPv4Address):
-                    self.send_arp_request(addr)
+                    if addr not in self.skip_list:
+                        self.send_arp_request(addr)
                 else: #A network
-                    self.send_arp_request(addr.network_address)
+                    if addr.network_address not in self.skip_list:
+                        self.send_arp_request(addr.network_address)
                     for x in addr.hosts():
-                        self.send_arp_request(x)
-                    self.send_arp_request(addr.broadcast_address)
+                        if x not in self.skip_list:
+                            self.send_arp_request(x)
+                    if addr.broadcast_address not in self.skip_list:
+                        self.send_arp_request(addr.broadcast_address)
         except:
             raise IPAddressingError
     
@@ -188,36 +194,3 @@ class ArpRequester(asyncio.Protocol):
         pass
     
 
-if __name__ == '__main__':
-    import subprocess
-    def my_process(data):
-        print ("Source MAC:      {}".format(data["mac"]))
-        print ("Source IP:       {}".format(data["ip"]))
-        print()
-        
-    event_loop = asyncio.get_event_loop()
-    mydomain=[x for x in subprocess.getoutput("ip route|sed '/via/d' | sed '/src /!d' | sed '/dev /!d' |sed '2,$d'").split(" ") if x]
-    myiface=mydomain[2]
-    mydomain=mydomain[0]
-    
-    #First create and configure a raw socket
-    mysocket = create_raw_socket(myiface)
-    
-    #create a connection with the raw socket
-    fac=event_loop.create_connection(ArpRequester,sock=mysocket)
-    #Start it
-    conn,arpctrl = event_loop.run_until_complete(fac)
-    #Attach your processing 
-    arpctrl.process=my_process
-    print ("Probing {} on {}".format(mydomain,myiface))
-    #Probe
-    arpctrl.request(ipaddress.IPv4Network(mydomain))
-    try:
-        # event_loop.run_until_complete(coro)
-        event_loop.run_forever()
-    except KeyboardInterrupt:
-        print('keyboard interrupt')
-    finally:
-        print('closing event loop')
-        conn.close()
-        event_loop.close()
