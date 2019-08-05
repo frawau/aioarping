@@ -36,10 +36,6 @@ class IPAddressingError(Exception):
     pass
 
 
-def int_to_bytes(x):
-    return x.to_bytes((x.bit_length() + 7) // 8, 'big')
-
-
 def create_raw_socket(interface=None, family=0, proto=0):
     if interface is None:
         raise ValueError(
@@ -165,11 +161,11 @@ class ArpRequester(asyncio.Protocol):
             # Source MAC address :
             self.smac,
             # Source IP address :
-            int_to_bytes(int(self.sip)),
+            self.sip.packed,
             # Destination MAC address (what we are looking for) (=00*6) :
             pack('!6B', *(0,) * 6),
             # Target IP address:
-            int_to_bytes(int(ip_addr))
+            ip_addr.packed
         ]
         
         self.transport.write(b''.join(frame)) # Sending
