@@ -13,7 +13,11 @@ setup(
     download_url="http://github.com/frawau/aiolifx/archive/aioarping/0.1.3.tar.gz",
     keywords=["arp", "mac address", "presence", "automation"],
     license="MIT",
-    install_requires=["ipaddress",],
+    install_requires=["ipaddress"],
+    extras_require = {
+        "utils": ["routeparser"],
+        "cli": ["aioarping[utils]"],
+    },
     # See https://pypi.python.org/pypi?%3Aaction=list_classifiers
     classifiers=[
         "License :: OSI Approved :: MIT License",
