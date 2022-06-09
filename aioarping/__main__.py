@@ -23,7 +23,10 @@
 # WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR
 # IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE
 
-import subprocess, asyncio, aioarping, ipaddress
+import asyncio, aioarping, ipaddress
+
+
+from .utils import get_interface_and_network
 
 
 def my_process(data):
@@ -33,15 +36,7 @@ def my_process(data):
 
 
 event_loop = asyncio.get_event_loop()
-mydomain = [
-    x
-    for x in subprocess.getoutput(
-        "ip route|sed '/via/d' |sed '/docker/d'|sed '/linkdown/d'|sed '/src /!d' | sed '/dev /!d' |sed '2,$d'"
-    ).split(" ")
-    if x
-]
-myiface = mydomain[2]
-mydomain = mydomain[0]
+myiface, mydomain = get_interface_and_network()
 
 # First create and configure a raw socket
 mysocket = aioarping.create_raw_socket(myiface)

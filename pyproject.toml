@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=61.2.0", "wheel", "setuptools_scm[toml]>=3.4.3"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "aioarping"
+authors = [{name = "François Wautier", email = "francois@wautier.eu"}]
+license = {text = "MIT"}
+description = "API for arping over a LAN with asyncio."
+readme = "README.md"
+keywords = ["arp", "mac address", "presence", "automation"]
+classifiers = [
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.5",
+]
+urls = {Homepage = "http://github.com/frawau/aioarping"}
+dependencies = ["ipaddress"]
+dynamic = ["version"]
+
+[project.optional-dependencies]
+utils = ["routeparser"]
+cli = ["aioarping[utils]"]
+
+[tool.setuptools]
+packages = ["aioarping"]
+
+[tool.setuptools_scm]
